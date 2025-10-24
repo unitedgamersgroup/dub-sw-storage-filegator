@@ -10,12 +10,12 @@ return [
     'lockout_timeout' => 15, // ip lockout timeout in seconds
 
     'frontend_config' => [
-        'app_name' => 'FileGator',
+        'app_name' => 'Dubaro Object Storage',
         'app_version' => APP_VERSION,
         'language' => 'english',
         'logo' => 'https://filegator.io/filegator_logo.svg',
-        'upload_max_size' => 100 * 1024 * 1024, // 100MB
-        'upload_chunk_size' => 1 * 1024 * 1024, // 1MB
+        'upload_max_size' => 20000 * 1024 * 1024, // 1000MB
+        'upload_chunk_size' => 10 * 1024 * 1024, // 1MB
         'upload_simultaneous' => 3,
         'default_archive_name' => 'archive.zip',
         'editable' => ['.txt', '.css', '.js', '.ts', '.html', '.php', '.json', '.md'],
@@ -49,10 +49,10 @@ return [
                     $handler = new \Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler($save_path);
 
                     return new \Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage([
-                            "cookie_samesite" => "Lax",
-                            "cookie_secure" => null,
-                            "cookie_httponly" => true,
-                        ], $handler);
+                        "cookie_samesite" => "Lax",
+                        "cookie_secure" => null,
+                        "cookie_httponly" => true,
+                    ], $handler);
                 },
             ],
         ],
@@ -74,7 +74,8 @@ return [
             'handler' => '\Filegator\Services\Security\Security',
             'config' => [
                 'csrf_protection' => true,
-                'csrf_key' => "123456", // randomize this
+                // Todo!!!
+                'csrf_key' => "3245828592345823495355", // randomize this
                 'ip_allowlist' => [],
                 'ip_denylist' => [],
                 'allow_insecure_overlays' => false,
@@ -93,9 +94,34 @@ return [
                 'separator' => '/',
                 'config' => [],
                 'adapter' => function () {
-                    return new \League\Flysystem\Adapter\Local(
-                        __DIR__.'/repository'
+                    $client = new \Aws\S3\S3Client([
+                        'credentials' => [
+                            // Todo!!!
+                            'key' => 'XXXXXXXX',
+                            // Todo!!!
+                            'secret' => 'XXXXXX',
+                        ],
+                        'region' => 'europe-2',
+                        'location' => 'de-fra1',
+                        'version' => 'latest',
+                        'validate' => false,
+                        // Todo!!!
+                        'endpoint' => 'XXXXXX',
+                    ]);
+                    $handlerList = $client->getHandlerList();
+                    $handlerList->appendSign(
+                        \Aws\Middleware::mapRequest(function (\Psr\Http\Message\RequestInterface $request) {
+                            $uri = (string)$request->getUri();
+                            if (str_contains($uri, '?delete')) {
+                                $body = (string)$request->getBody();
+                                $md5 = base64_encode(md5($body, true));
+                                return $request->withHeader('Content-MD5', $md5);
+                            }
+                            return $request;
+                        })
                     );
+
+                    return new \League\Flysystem\AwsS3v3\AwsS3Adapter($client, 'downloads');
                 },
             ],
         ],
