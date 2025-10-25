@@ -168,3 +168,12 @@ If you discover any security related issues, please email alcalbg@gmail.com inst
 Copyright (c) 2019 [Milos Stojanovic](https://github.com/alcalbg).
 
 This project is MIT licensed.
+
+
+## Dubaro stuff
+
+### Deploy
+` rsync -avzin --progress -e "ssh -i ~/.ssh/bent_mac_ugg" --exclude-from=".rsyncignore" ./ c185274_file_storage_bent@file-storage.dubaro.de:/var/www/clients/client1/web11/web`
+- you have to use your ssh key
+- this is -n -> means test and feedbacks which files are being changed / updated
+- this is pushing the built FE assets as well (`npm run build` locally)
