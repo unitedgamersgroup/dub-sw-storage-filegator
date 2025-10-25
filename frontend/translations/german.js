@@ -77,6 +77,9 @@ const data = {
   'Show hidden': 'Verborgenes zeigen',
   'Show symbolic format': 'Symbolisches Format anzeigen',
   'Hide symbolic format': 'Symbolisches Format ausblenden',
+  'Copy public S3 link': 'Öffentlichen Link kopieren',
+  'Copied S3 link': 'Copied S3 link',
+  'Failed to copy S3 link.': 'Failed to copy S3 link.'
 }
 
 export default data

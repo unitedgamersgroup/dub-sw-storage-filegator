@@ -150,6 +150,13 @@
                 <b-dropdown-item v-if="props.row.type == 'file' && can('download')" v-clipboard:copy="getDownloadLink(props.row.path)" aria-role="listitem">
                   <b-icon icon="clipboard" size="is-small" /> {{ lang('Copy link') }}
                 </b-dropdown-item>
+                <b-dropdown-item
+                  v-if="props.row.type == 'file'"
+                  aria-role="listitem"
+                  @click="copyS3Link(props.row)"
+                >
+                  <b-icon icon="link" size="is-small" /> {{ lang('Copy public S3 link') }}
+                </b-dropdown-item>
               </b-dropdown>
             </b-table-column>
           </template>
@@ -225,6 +232,9 @@ export default {
         return o.type == 'file' || o.type == 'dir'
       }))
     },
+    baseUri() {
+      return this.$store.state.config.base_uri
+    }
   },
   watch: {
     '$route' (to) {
@@ -657,6 +667,28 @@ export default {
         if (_.isString(a[param])) return (a[param].localeCompare(b[param])) * (order ? -1 : 1)
         else return ((a[param] < b[param]) ? -1 : 1) * (order ? -1 : 1)
       }
+    },
+    copyS3Link(file) {
+      // Example: file.path might be something like "/uploads/my_file.jpg"
+      const fileName = file.name || file.path.split('/').pop()
+
+      // Construct the final public URL
+      const publicUrl = `${this.baseUri}/${file.path.replace(/^\//, '')}`
+
+      // Copy it to clipboard
+      navigator.clipboard.writeText(publicUrl)
+        .then(() => {
+          this.$toast.open({
+            message: `Copied S3 link: ${fileName}`,
+            type: 'is-success',
+          })
+        })
+        .catch(() => {
+          this.$toast.open({
+            message: 'Failed to copy S3 link.',
+            type: 'is-danger',
+          })
+        })
     },
   }
 }
