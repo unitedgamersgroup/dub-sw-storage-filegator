@@ -1,5 +1,6 @@
 services:
   filegator:
+    # you need it for the ldap stuff
     platform: linux/amd64
     build:
       context: .
