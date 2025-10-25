@@ -24,6 +24,7 @@ return [
         'search_simultaneous' => 5,
         'filter_entries' => [],
         'pagination' => ['', 5, 10, 15],
+        'base_uri' => 'https://downloads.storage.dubaro.de',
     ],
 
     'services' => [
@@ -93,7 +94,7 @@ return [
             'config' => [
                 'separator' => '/',
                 'config' => [],
-                'adapter' => function () {
+                'adapter' => static function () {
                     $client = new \Aws\S3\S3Client([
                         'credentials' => [
                             // Todo!!!
