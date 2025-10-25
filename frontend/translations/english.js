@@ -77,6 +77,9 @@ const data = {
   'Show hidden': 'Show hidden',
   'Show symbolic format': 'Show symbolic format',
   'Hide symbolic format': 'Hide symbolic format',
+  'Copy public S3 link': 'Copy public S3 link',
+  'Copied S3 link': 'Copied S3 link',
+  'Failed to copy S3 link.': 'Failed to copy S3 link.'
 }
 
 export default data
